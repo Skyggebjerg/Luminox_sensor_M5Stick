@@ -176,11 +176,11 @@ static void drawDisplay() {
   canvas.fillSprite(COL_BG);
 
   // ── Title bar ────────────────────────────────────────────────
-  canvas.fillRect(0, 0, DISP_W, 22, 0x112244);
-  canvas.setTextColor(COL_ACCENT);
-  canvas.setTextSize(1);
-  canvas.setFont(&fonts::FreeSans9pt7b);
-  canvas.drawString("LuminOx LOX-02", 8, 5);
+  //canvas.fillRect(0, 0, DISP_W, 22, 0x112244);
+  //canvas.setTextColor(COL_ACCENT);
+  //canvas.setTextSize(1);
+  //canvas.setFont(&fonts::FreeSans9pt7b);
+  //canvas.drawString("LuminOx LOX-02", 8, 5);
 
   // Status dot + text (top-right)
   bool statusOK = (sensorData.status == 0);
@@ -193,7 +193,7 @@ static void drawDisplay() {
   canvas.setTextSize(1);
   const char* stText = !sensorData.valid ? "WAIT"
                         : (statusOK       ? "OK"  : "ERR");
-  canvas.drawString(stText, DISP_W - 44, 7);
+  canvas.drawString(stText, DISP_W - 44, 7); // 3 chars wide, right-aligned with status dot
 
   // ── If no data yet, show waiting message ─────────────────────
   if (!sensorData.valid) {
@@ -206,7 +206,7 @@ static void drawDisplay() {
     return;
   }
 
-  canvas.setTextDatum(top_left);
+  canvas.setTextDatum(top_left); // reset text datum in case it was changed for waiting message
 
   // ── Big O2 percentage display (hero value) ───────────────────
   uint32_t o2Col = o2Colour(sensorData.O2_pct);
@@ -214,24 +214,24 @@ static void drawDisplay() {
   canvas.setTextColor(o2Col);
   char buf[32];
   snprintf(buf, sizeof(buf), "%.2f", sensorData.O2_pct);
-  canvas.drawString(buf, 8, 26);
+  canvas.drawString(buf, 8, 6); // Value (8, 26)
 
   // "%" unit label next to big number
   canvas.setFont(&fonts::FreeSans9pt7b);
   canvas.setTextColor(o2Col);
-  canvas.drawString("%", 130, 50);
+  canvas.drawString("%", 130, 30);
 
   // O2 label below
   canvas.setFont(&fonts::Font0);
   canvas.setTextColor(COL_LABEL);
   canvas.setTextSize(1);
-  canvas.drawString("O2 Concentration", 8, 68);
+  canvas.drawString("O2 Concentration", 8, 52); // Label below big number 68
 
-  drawDivider(78);
+  drawDivider(65); // horizontal divider below O2 concentration 78
 
   // ── Three data columns below the divider ─────────────────────
   //   ppO2 | Pressure | Temperature
-  int rowY = 84;
+  int rowY = 70; // Y coordinate of the first row (ppO2), subsequent rows are offset by +40 84
   canvas.setFont(&fonts::FreeSans9pt7b);
 
   // ppO2 (mbar)
@@ -239,11 +239,11 @@ static void drawDisplay() {
   canvas.drawString("ppO2", 8, rowY);
   canvas.setTextColor(COL_VALUE);
   snprintf(buf, sizeof(buf), "%.1f", sensorData.ppO2_mbar);
-  canvas.drawString(buf, 8, rowY + 14);
+  canvas.drawString(buf, 8, rowY + 24); // Value below label 74 +14
   canvas.setTextColor(COL_UNIT);
   canvas.setFont(&fonts::Font0);
   canvas.setTextSize(1);
-  canvas.drawString("mbar", 8, rowY + 28);
+  canvas.drawString("mbar", 8, rowY + 48);
 
   // Vertical separator
   canvas.drawFastVLine(88, rowY, 40, COL_DIVIDER);
@@ -254,11 +254,11 @@ static void drawDisplay() {
   canvas.drawString("Pres.", 96, rowY);
   canvas.setTextColor(COL_VALUE);
   snprintf(buf, sizeof(buf), "%4.0f", sensorData.pressure_mb);
-  canvas.drawString(buf, 96, rowY + 14);
+  canvas.drawString(buf, 96, rowY + 24);
   canvas.setFont(&fonts::Font0);
   canvas.setTextColor(COL_UNIT);
   canvas.setTextSize(1);
-  canvas.drawString("mbar", 96, rowY + 28);
+  canvas.drawString("mbar", 96, rowY + 48);
 
   // Vertical separator
   canvas.drawFastVLine(168, rowY, 40, COL_DIVIDER);
@@ -269,11 +269,11 @@ static void drawDisplay() {
   canvas.drawString("Temp", 176, rowY);
   canvas.setTextColor(COL_VALUE);
   snprintf(buf, sizeof(buf), "%+.1f", sensorData.temp_C);
-  canvas.drawString(buf, 176, rowY + 14);
+  canvas.drawString(buf, 176, rowY + 24);
   canvas.setFont(&fonts::Font0);
   canvas.setTextColor(COL_UNIT);
   canvas.setTextSize(1);
-  canvas.drawString("\xB0" "C", 176, rowY + 28);   // °C
+  canvas.drawString("\xB0" "C", 176, rowY + 48);   // °C
 
   // ── Push entire canvas to physical display in one shot ───────
   canvas.pushSprite(0, 0);
